@@ -93,6 +93,7 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 vim.g.editorconfig = false
+vim.g.cursorlineopt = 'both'
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -112,6 +113,8 @@ vim.opt.expandtab = false
 vim.opt.tabstop = 4
 vim.opt.sw = 4
 vim.opt.softtabstop = 4
+vim.opt.textwidth = 80
+vim.opt.colorcolumn = '+1'
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
@@ -194,6 +197,9 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+vim.keymap.set('n', '<leader>jq', ':% !jq .<CR>', { desc = 'Format JSON with jq' })
+vim.keymap.set('n', '<leader>ib', ':IBLDisable <CR>', { desc = 'Disable the indentation guides' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -853,14 +859,16 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    'EdenEast/nightfox.nvim',
+    'projekt0n/github-nvim-theme',
+    --'folke/tokyonight.nvim',
+    --'EdenEast/nightfox.nvim',
+    --'rebelot/kanagawa.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'dayfox'
+      vim.cmd.colorscheme 'github_dark'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
