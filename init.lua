@@ -455,6 +455,83 @@ require('lazy').setup({
 
   -- LSP Plugins
   {
+    'mfussenegger/nvim-dap',
+    lazy = true,
+    -- Copied from LazyVim/lua/lazyvim/plugins/extras/dap/core.lua and
+    -- modified.
+    keys = {
+      {
+        '<leader>db',
+        function()
+          require('dap').toggle_breakpoint()
+        end,
+        desc = 'Toggle Breakpoint',
+      },
+
+      {
+        '<leader>dc',
+        function()
+          require('dap').continue()
+        end,
+        desc = 'Continue',
+      },
+
+      {
+        '<leader>dC',
+        function()
+          require('dap').run_to_cursor()
+        end,
+        desc = 'Run to Cursor',
+      },
+
+      {
+        '<leader>dT',
+        function()
+          require('dap').terminate()
+        end,
+        desc = 'Terminate',
+      },
+
+      {
+        '<leader>dus',
+        function()
+          local widgets = require 'dap.ui.widgets'
+          local sidebar = widgets.sidebar(widgets.scopes)
+          sidebar.open()
+        end,
+        desc = 'Open Debugging Sidebar',
+      },
+    },
+  },
+  {
+    'leoluz/nvim-dap-go',
+    config = function(_, opts)
+      require('dap-go').setup(opts)
+    end,
+    dependencies = {
+      'mfussenegger/nvim-dap',
+    },
+    keys = {
+      {
+        '<leader>dt',
+        function()
+          require('dap-go').debug_test()
+        end,
+        desc = 'Debug test',
+      },
+    },
+  },
+  --{
+  --  'leoluz/nvim-dap-go',
+  --  ft = 'go',
+  --  dependencies = {
+  --    'mfusssenegger/nvim-dap',
+  --  },
+  --  config = function(_, opts)
+  --    require('dap-go').setup(opts)
+  --  end,
+  --},
+  {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
     'folke/lazydev.nvim',
@@ -860,15 +937,17 @@ require('lazy').setup({
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     'projekt0n/github-nvim-theme',
-    --'folke/tokyonight.nvim',
-    --'EdenEast/nightfox.nvim',
-    --'rebelot/kanagawa.nvim',
+    'folke/tokyonight.nvim',
+    'EdenEast/nightfox.nvim',
+    'rebelot/kanagawa.nvim',
+    'catppuccin/nvim',
+    lazy = false,
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'github_dark'
+      vim.cmd.colorscheme 'catppuccin-mocha'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -959,6 +1038,65 @@ require('lazy').setup({
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
+  {
+    'yetone/avante.nvim',
+    event = 'VeryLazy',
+    version = false, -- Never set this value to "*"! Never!
+    opts = {
+      -- add any opts here
+      -- for example
+      provider = 'openai',
+      openai = {
+        endpoint = 'https://api.openai.com/v1',
+        model = 'gpt-4o', -- your desired model (or use gpt-4o, etc.)
+        timeout = 30000, -- Timeout in milliseconds, increase this for reasoning models
+        temperature = 0,
+        max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
+        --reasoning_effort = "medium", -- low|medium|high, only used for reasoning models
+      },
+    },
+    -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+    build = 'make',
+    -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'stevearc/dressing.nvim',
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      --- The below dependencies are optional,
+      'echasnovski/mini.pick', -- for file_selector provider mini.pick
+      'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
+      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+      'ibhagwan/fzf-lua', -- for file_selector provider fzf
+      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+      'zbirenbaum/copilot.lua', -- for providers='copilot'
+      {
+        -- support for image pasting
+        'HakonHarnes/img-clip.nvim',
+        event = 'VeryLazy',
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            -- required for Windows users
+            use_absolute_path = true,
+          },
+        },
+      },
+      {
+        -- Make sure to set this up properly if you have lazy=true
+        'MeanderingProgrammer/render-markdown.nvim',
+        opts = {
+          file_types = { 'markdown', 'Avante' },
+        },
+        ft = { 'markdown', 'Avante' },
+      },
+    },
+  },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -1007,6 +1145,58 @@ require('lazy').setup({
     },
   },
 })
+
+require('catppuccin').setup {
+  flavour = 'auto', -- latte, frappe, macchiato, mocha
+  background = { -- :h background
+    light = 'latte',
+    dark = 'mocha',
+  },
+  transparent_background = false, -- disables setting the background color.
+  show_end_of_buffer = false, -- shows the '~' characters after the end of buffers
+  term_colors = false, -- sets terminal colors (e.g. `g:terminal_color_0`)
+  dim_inactive = {
+    enabled = false, -- dims the background color of inactive window
+    shade = 'dark',
+    percentage = 0.15, -- percentage of the shade to apply to the inactive window
+  },
+  no_italic = false, -- Force no italic
+  no_bold = false, -- Force no bold
+  no_underline = false, -- Force no underline
+  styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
+    comments = { 'italic' }, -- Change the style of comments
+    conditionals = { 'italic' },
+    loops = {},
+    functions = {},
+    keywords = {},
+    strings = {},
+    variables = {},
+    numbers = {},
+    booleans = {},
+    properties = {},
+    types = {},
+    operators = {},
+    -- miscs = {}, -- Uncomment to turn off hard-coded styles
+  },
+  color_overrides = {},
+  custom_highlights = {},
+  default_integrations = true,
+  integrations = {
+    cmp = true,
+    gitsigns = true,
+    nvimtree = true,
+    treesitter = true,
+    notify = false,
+    mini = {
+      enabled = true,
+      indentscope_color = '',
+    },
+    -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
+  },
+}
+
+-- setup must be called before loading
+vim.cmd.colorscheme 'catppuccin'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
