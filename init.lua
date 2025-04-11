@@ -107,7 +107,7 @@ vim.opt.number = true
 -- vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
-vim.opt.mouse = 'a'
+vim.opt.mouse = ''
 vim.opt.wrapscan = false
 vim.opt.expandtab = false
 vim.opt.tabstop = 4
@@ -123,9 +123,9 @@ vim.opt.showmode = false
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
-end)
+-- vim.schedule(function()
+--   vim.opt.clipboard = 'unnamedplus'
+-- end)
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -1196,7 +1196,8 @@ require('catppuccin').setup {
 }
 
 -- setup must be called before loading
-vim.cmd.colorscheme 'catppuccin'
+--vim.cmd.colorscheme 'catppuccin'
+vim.cmd.colorscheme 'nightfox'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
