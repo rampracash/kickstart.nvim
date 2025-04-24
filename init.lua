@@ -241,7 +241,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-  'github/copilot.vim',
+  -- 'github/copilot.vim',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -708,7 +708,13 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        clangd = {},
+        clangd = {
+          cmd = { 'clangd', '--header-insertion=never' },
+          filetypes = { 'c', 'cpp', 'objc', 'objcpp' },
+          capabilities = {
+            offsetEncoding = { 'utf-16' },
+          },
+        },
         gopls = {},
         pyright = {},
         rust_analyzer = {},
@@ -1197,7 +1203,8 @@ require('catppuccin').setup {
 
 -- setup must be called before loading
 --vim.cmd.colorscheme 'catppuccin'
-vim.cmd.colorscheme 'nightfox'
+--vim.cmd.colorscheme 'nightfox'
+vim.cmd.colorscheme 'github_dark_high_contrast'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
