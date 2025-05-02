@@ -288,6 +288,10 @@ require('lazy').setup({
       },
     },
   },
+  {
+    'kaplanz/retrail.nvim',
+    opts = {}, -- calls `setup` using provided `opts`
+  },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
