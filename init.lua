@@ -1262,3 +1262,5 @@ vim.cmd.colorscheme 'github_dark_high_contrast'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+vim.diagnostic.config { virtual_text = { current_line = true } }
+vim.o.winborder = 'single'
