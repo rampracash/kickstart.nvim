@@ -1268,3 +1268,16 @@ vim.cmd.colorscheme 'github_dark_high_contrast'
 -- vim: ts=2 sts=2 sw=2 et
 vim.diagnostic.config { virtual_text = { current_line = true } }
 vim.o.winborder = 'single'
+-- Function to set options for C files
+local function set_c_options()
+  vim.opt_local.expandtab = true -- Insert spaces instead of tabs
+  vim.opt_local.tabstop = 4 -- Number of spaces for a tab
+  vim.opt_local.shiftwidth = 4 -- Number of spaces for autoindent
+  vim.opt_local.softtabstop = 4 -- Number of spaces for tab/backspace key
+  vim.opt_local.indentexpr = ''
+end
+-- Autocommands to apply settings based on file type
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'c,cpp,h',
+  callback = set_c_options,
+})
