@@ -1267,7 +1267,7 @@ vim.cmd.colorscheme 'github_dark_high_contrast'
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 vim.diagnostic.config { virtual_text = { current_line = true } }
-vim.o.winborder = 'single'
+vim.o.winborder = 'rounded'
 -- Function to set options for C files
 local function set_c_options()
   vim.opt_local.expandtab = true -- Insert spaces instead of tabs
