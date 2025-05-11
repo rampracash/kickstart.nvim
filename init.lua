@@ -204,7 +204,14 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 vim.keymap.set('n', '<leader>jq', ':% !jq .<CR>', { desc = 'Format JSON with jq' })
-vim.keymap.set('n', '<leader>ib', ':IBLDisable <CR>', { desc = 'Disable the indentation guides' })
+vim.keymap.set('n', '<leader>tb', ':IBLToggle <CR>', { desc = 'Toggle the indentation guides' })
+vim.keymap.set(
+  'n',
+  '<leader>tc',
+  'ggI#include <stdio.h><CR>#include <stdlib.h><CR>#include <stdbool.h><CR>#include <string.h><CR><Esc>',
+  { desc = 'Include standard headers' }
+)
+vim.keymap.set('n', '<leader>tn', ':set number! <CR>', { desc = 'Toggle the number guides' })
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
 -- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
