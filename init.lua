@@ -107,14 +107,14 @@ vim.opt.number = true
 -- vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
-vim.opt.mouse = ''
-vim.opt.wrapscan = false
-vim.opt.expandtab = false
-vim.opt.tabstop = 4
-vim.opt.sw = 4
-vim.opt.softtabstop = 4
-vim.opt.textwidth = 80
-vim.opt.colorcolumn = '+1'
+vim.o.mouse = 'a'
+vim.o.wrapscan = false
+vim.o.expandtab = true
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.softtabstop = 4
+vim.o.textwidth = 80
+vim.o.colorcolumn = '+1'
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
@@ -134,8 +134,8 @@ vim.opt.breakindent = true
 vim.opt.undofile = true
 
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
-vim.opt.ignorecase = false
-vim.opt.smartcase = true
+vim.o.ignorecase = false
+vim.o.smartcase = true
 
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
@@ -168,7 +168,8 @@ vim.opt.scrolloff = 4
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
-vim.opt.confirm = true
+vim.o.confirm = true
+vim.o.winborder = 'single'
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -180,6 +181,25 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+vim.keymap.set('n', '<leader>ib', ':IBLDisable <CR>', { desc = 'Disable the indentation guides' })
+vim.keymap.set('n', '<leader>tb', ':IBLToggle <CR>', { desc = 'Toggle the indentation guides' })
+vim.keymap.set('n', '<leader>tn', ':set number! <CR>', { desc = 'Toggle the number guides' })
+vim.keymap.set('n', '<Tab>', ':BufferLineCycleNext<CR>', { desc = 'Next Buffer' })
+vim.keymap.set('n', '<S-Tab>', ':BufferLineCyclePrev<CR>', { desc = 'Prev Buffer' })
+vim.keymap.set('n', '<leader>x', ':bd<CR>', { desc = 'Close Buffer' })
+
+local function set_c_options()
+  vim.opt_local.expandtab = true -- Insert spaces instead of tabs
+  vim.opt_local.tabstop = 4 -- Number of spaces for a tab
+  vim.opt_local.shiftwidth = 4 -- Number of spaces for autoindent
+  vim.opt_local.softtabstop = 4 -- Number of spaces for tab/backspace key
+  vim.opt_local.indentexpr = ''
+end
+-- Autocommands to apply settings based on file type
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'c,cpp,h',
+  callback = set_c_options,
+})
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -258,7 +278,8 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-  -- 'github/copilot.vim',
+  'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  'github/copilot.vim',
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -456,11 +477,11 @@ require('lazy').setup({
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
-        -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-          winblend = 10,
-          previewer = false,
-        })
+          -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+          builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+              winblend = 10,
+              previewer = false,
+          })
       end, { desc = '[/] Fuzzily search in current buffer' })
 
       -- It's also possible to pass additional configuration options.
@@ -529,34 +550,6 @@ require('lazy').setup({
       },
     },
   },
-  {
-    'leoluz/nvim-dap-go',
-    config = function(_, opts)
-      require('dap-go').setup(opts)
-    end,
-    dependencies = {
-      'mfussenegger/nvim-dap',
-    },
-    keys = {
-      {
-        '<leader>dt',
-        function()
-          require('dap-go').debug_test()
-        end,
-        desc = 'Debug test',
-      },
-    },
-  },
-  --{
-  --  'leoluz/nvim-dap-go',
-  --  ft = 'go',
-  --  dependencies = {
-  --    'mfusssenegger/nvim-dap',
-  --  },
-  --  config = function(_, opts)
-  --    require('dap-go').setup(opts)
-  --  end,
-  --},
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
@@ -665,6 +658,8 @@ require('lazy').setup({
           --  Useful when you're not sure what type a variable is and you want to see
           --  the definition of its *type*, not where it was *defined*.
           map('grt', require('telescope.builtin').lsp_type_definitions, '[G]oto [T]ype Definition')
+          map('n', '<leader>ti', ':IBLDisable<CR>', { desc = '[T]oggle [i]ndentation guides' })
+          map('n', '<leader>tn', ':set number!', { desc = '[T]oggle line [n]umbers' })
 
           -- This function resolves a difference between neovim nightly (version 0.11) and stable (version 0.10)
           ---@param client vim.lsp.Client
@@ -724,7 +719,7 @@ require('lazy').setup({
       -- See :help vim.diagnostic.Opts
       vim.diagnostic.config {
         severity_sort = true,
-        float = { border = 'rounded', source = 'if_many' },
+        float = { border = 'rounded', source = 'true' },
         underline = { severity = vim.diagnostic.severity.ERROR },
         signs = vim.g.have_nerd_font and {
           text = {
@@ -765,16 +760,10 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        clangd = {
-          cmd = { 'clangd', '--header-insertion=never' },
-          filetypes = { 'c', 'cpp', 'objc', 'objcpp' },
-          capabilities = {
-            offsetEncoding = { 'utf-16' },
-          },
-        },
-        gopls = {},
-        pyright = {},
-        rust_analyzer = {},
+        clangd = {},
+        -- gopls = {},
+        -- pyright = {},
+        -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -833,50 +822,49 @@ require('lazy').setup({
           end,
         },
       }
-    end,
+  end,
   },
 
-  { -- Autoformat
-    'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
-    cmd = { 'ConformInfo' },
-    --keys = {
-    --  {
-    --    '<leader>f',
-    --    function()
-    --      require('conform').format { async = true, lsp_format = 'fallback' }
-    --    end,
-    --    mode = '',
-    --    desc = '[F]ormat buffer',
-    --  },
-    --},
-    opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          return nil
-        else
-          return {
-            timeout_ms = 500,
-            lsp_format = 'fallback',
-          }
-        end
-      end,
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        go = { 'gofmt' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-      },
-    },
-  },
+  --  { -- Autoformat
+  --    'stevearc/conform.nvim',
+  --    event = { 'BufWritePre' },
+  --    cmd = { 'ConformInfo' },
+  --    keys = {
+  --      {
+  --        '<leader>f',
+  --        function()
+  --          require('conform').format { async = true, lsp_format = 'fallback' }
+  --        end,
+  --        mode = '',
+  --        desc = '[F]ormat buffer',
+  --      },
+  --    },
+  --    opts = {
+  --      notify_on_error = false,
+  --      format_on_save = function(bufnr)
+  --        -- Disable "format_on_save lsp_fallback" for languages that don't
+  --        -- have a well standardized coding style. You can add additional
+  --        -- languages here or re-enable it for the disabled ones.
+  --        local disable_filetypes = { c = true, cpp = true }
+  --        if disable_filetypes[vim.bo[bufnr].filetype] then
+  --          return nil
+  --        else
+  --          return {
+  --            timeout_ms = 500,
+  --            lsp_format = 'fallback',
+  --          }
+  --        end
+  --      end,
+  --      formatters_by_ft = {
+  --        lua = { 'stylua' },
+  --        -- Conform can also run multiple formatters sequentially
+  --        -- python = { "isort", "black" },
+  --        --
+  --        -- You can use 'stop_after_first' to run the first available formatter from the list
+  --        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+  --      },
+  --    },
+  --  },
 
   { -- Autocompletion
     'saghen/blink.cmp',
@@ -1056,6 +1044,7 @@ require('lazy').setup({
       ensure_installed = {
         'bash',
         'c',
+        'cpp',
         'diff',
         'html',
         'lua',
@@ -1066,12 +1055,10 @@ require('lazy').setup({
         'vim',
         'vimdoc',
         'yaml',
-        'go',
-        'rust',
-        'gomod',
-        'gosum',
-        'dockerfile',
         'json',
+        'yang',
+        'make',
+        'cmake',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
@@ -1109,65 +1096,24 @@ require('lazy').setup({
       -- refer to the configuration section below
     },
   },
-  -- {
-  --   'yetone/avante.nvim',
-  --   event = 'VeryLazy',
-  --   version = false, -- Never set this value to "*"! Never!
-  --   opts = {
-  --     -- add any opts here
-  --     -- for example
-  --     provider = 'openai',
-  --     openai = {
-  --       endpoint = 'https://api.openai.com/v1',
-  --       model = 'gpt-4o', -- your desired model (or use gpt-4o, etc.)
-  --       timeout = 30000, -- Timeout in milliseconds, increase this for reasoning models
-  --       temperature = 0,
-  --       max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
-  --       --reasoning_effort = "medium", -- low|medium|high, only used for reasoning models
-  --     },
-  --   },
-  --   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-  --   build = 'make',
-  --   -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
-  --   dependencies = {
-  --     'nvim-treesitter/nvim-treesitter',
-  --     'stevearc/dressing.nvim',
-  --     'nvim-lua/plenary.nvim',
-  --     'MunifTanjim/nui.nvim',
-  --     --- The below dependencies are optional,
-  --     'echasnovski/mini.pick', -- for file_selector provider mini.pick
-  --     'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
-  --     'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
-  --     'ibhagwan/fzf-lua', -- for file_selector provider fzf
-  --     'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
-  --     'zbirenbaum/copilot.lua', -- for providers='copilot'
-  --     {
-  --       -- support for image pasting
-  --       'HakonHarnes/img-clip.nvim',
-  --       event = 'VeryLazy',
-  --       opts = {
-  --         -- recommended settings
-  --         default = {
-  --           embed_image_as_base64 = false,
-  --           prompt_for_file_name = false,
-  --           drag_and_drop = {
-  --             insert_mode = true,
-  --           },
-  --           -- required for Windows users
-  --           use_absolute_path = true,
-  --         },
-  --       },
-  --     },
-  --     {
-  --       -- Make sure to set this up properly if you have lazy=true
-  --       'MeanderingProgrammer/render-markdown.nvim',
-  --       opts = {
-  --         file_types = { 'markdown', 'Avante' },
-  --       },
-  --       ft = { 'markdown', 'Avante' },
-  --     },
-  --   },
-  -- },
+  {
+      'dhananjaylatkar/cscope_maps.nvim',
+      config = function()
+          require('cscope_maps').setup()
+      end,
+      dependencies = {
+          'nvim-telescope/telescope.nvim', -- optional [for picker="telescope"]
+          'ibhagwan/fzf-lua', -- optional [for picker="fzf-lua"]
+          'echasnovski/mini.pick', -- optional [for picker="mini-pick"]
+          'folke/snacks.nvim', -- optional [for picker="snacks"]
+      },
+      opts = {
+          -- USE EMPTY FOR DEFAULT OPTIONS
+          -- DEFAULTS ARE LISTED BELOW
+          disable_maps = false,
+      },
+      lazy = false,
+  },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -1184,6 +1130,8 @@ require('lazy').setup({
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.clangd', -- everything you need to get started with C/C++ development
+  require 'kickstart.plugins.bufferline', -- everything you need to get started with C/C++ development
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
@@ -1270,6 +1218,32 @@ require('catppuccin').setup {
 --vim.cmd.colorscheme 'catppuccin'
 --vim.cmd.colorscheme 'nightfox'
 vim.cmd.colorscheme 'github_dark_high_contrast'
+local highlight = {
+  'RainbowRed',
+  'RainbowYellow',
+  'RainbowBlue',
+  'RainbowOrange',
+  'RainbowGreen',
+  'RainbowViolet',
+  'RainbowCyan',
+}
+
+local hooks = require 'ibl.hooks'
+-- create the highlight groups in the highlight setup hook, so they are reset
+-- every time the colorscheme changes
+hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
+  vim.api.nvim_set_hl(0, 'RainbowRed', { fg = '#E06C75' })
+  vim.api.nvim_set_hl(0, 'RainbowYellow', { fg = '#E5C07B' })
+  vim.api.nvim_set_hl(0, 'RainbowBlue', { fg = '#61AFEF' })
+  vim.api.nvim_set_hl(0, 'RainbowOrange', { fg = '#D19A66' })
+  vim.api.nvim_set_hl(0, 'RainbowGreen', { fg = '#98C379' })
+  vim.api.nvim_set_hl(0, 'RainbowViolet', { fg = '#C678DD' })
+  vim.api.nvim_set_hl(0, 'RainbowCyan', { fg = '#56B6C2' })
+end)
+
+vim.g.rainbow_delimiters = { highlight = highlight }
+require('ibl').setup { scope = { highlight = highlight } }
+hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
